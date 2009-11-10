@@ -1,0 +1,9 @@
+Add vsync :
+
+<notaz|wrk> it's really simple:
+<notaz|wrk> #include <linux/matroxfb.h>
+<notaz|wrk> ...
+<notaz|wrk> int ret = 0;
+<notaz|wrk> ret = ioctl(fbdev, FBIO_WAITFORVSYNC, &ret);
+<notaz|wrk> if (ret != 0) printf("FBIO_WAITFORVSYNC failed: %d\n", ret);
+<notaz|wrk> not sure how it will work with SGX though
