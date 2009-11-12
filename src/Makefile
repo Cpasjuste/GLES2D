@@ -1,49 +1,66 @@
-# GLES 2D Makefile
 
-SRC =  	GLES2D_video.o GLES2D_texture.o GLES2D_control.o GLES2D_control_pnd.o \
-		GLES2D_font.o GLES2D_drawing.o GLES2D_utils.o GLES2D_collision.o GLES2D_sprite.o \
-		GLES2D_tiles.o GLES2D_particle.o
+#
+# libpnd Makefile
+#
 
-OBJ = $(SRC:.c=.o)
+# tools
+CC = ${CROSSCOMPILE}gcc
+CXX = ${CROSSCOMPILE}g++
+AR = ${CROSSCOMPILE}ar
+RANLIB = ${CROSSCOMPILE}ranlib
+RM = rm
 
-OUT = libGLES2D.a
+# environment
+VPATH = lib test apps
+CFLAG_SO = -fPIC #-fPIC not always needed, but good to have
+CFLAGS = -Wall -Werror -I./include -g ${CFLAG_SO}
 
-CFLAGS		= -g -Wall -Werror
-INCLUDES	= -I. -Iinclude
-
-ifdef PANDORA
-
-CC		= arm-none-linux-gnueabi-gcc
-CXX		= arm-none-linux-gnueabi-g++
-AR		= arm-none-linux-gnueabi-ar
-CFLAGS		+= -D_PANDORA_ -O3 -march=armv7-a -mcpu=cortex-a8 -mtune=cortex-a8 -mfloat-abi=softfp \
-		   -mfpu=neon -ftree-vectorize -ffast-math -fomit-frame-pointer -fno-strict-aliasing -fsingle-precision-constant
-INCLUDES	+= -I$(PNDSDK)/usr/include
-INSTALL		= cp libGLES2D.a $(PNDSDK)/usr/lib && cp include/GLES2D/* $(PNDSDK)/usr/include/GLES2D/
-
+ifdef X11
+CFLAGS += -D_X11_
 else
-
-CFLAGS		+= -D_X11_
-INCLUDES	+= -I/usr/include
-INSTALL		= sudo cp libGLES2D.a /usr/lib && sudo cp include/GLES2D/* /usr/include/GLES2D/
-
+CFLAGS += -D_PANDORA_ -I$(PNDSDK)/usr/include -O3 -march=armv7-a -mcpu=cortex-a8 -mtune=cortex-a8 -mfloat-abi=softfp \
+		-mfpu=neon -ftree-vectorize -ffast-math -fomit-frame-pointer -fno-strict-aliasing -fsingle-precision-constant
 endif
 
-.SUFFIXES: .c
+# code
+LIB = libGLES2D.a 
+SOLIB = libGLES2D.so.1         # canonicle name
+SOLIB1 = libGLES2D.so.1.0.1    # versioned name
+ALLOBJ = GLES2D_video.o GLES2D_texture.o GLES2D_control.o GLES2D_control_pnd.o GLES2D_font.o \
+		GLES2D_tiles.o GLES2D_drawing.o GLES2D_utils.o GLES2D_collision.o GLES2D_sprite.o \
+		GLES2D_particle.o
 
-default: $(OUT)
-
-.c.o:
-	$(CC) $(INCLUDES) $(CFLAGS) -c $< -o $@
-
-.cpp.o:
-	$(CXX) $(INCLUDES) $(CFLAGS) -c $< -o $@
-
-$(OUT): $(OBJ)
-	$(AR) rcs $(OUT) $(OBJ)
-	$(INSTALL)
-	
+all: ${SOLIB} ${LIB}
 
 clean:
-	rm -f $(OBJ) $(OUT) 
+	${RM} -f ${ALLOBJ} ${LIB} ${SOLIB1} ${SOLIB}
+	${RM} -rf deployment
+	find . -name "*~*" -exec rm {} \; -print
+
+# component targets
+#
+
+libGLES2D.a:	${ALLOBJ}
+	${AR} r ${LIB} ${ALLOBJ}
+	${RANLIB} ${LIB}
+
+libGLES2D.so.1:	${ALLOBJ}
+	${CC} -shared -Wl,-soname,${SOLIB} -o ${SOLIB1} ${ALLOBJ}
+	ln -f -s ${SOLIB1} ${SOLIB}
+
+${SOLIB1}:	${ALLOBJ} 
+	${CC} -shared -Wl,-soname,${SOLIB} -o ${SOLIB1} ${ALLOBJ}
+	ln -f -s ${SOLIB1} ${SOLIB}
+
+# deployment and assembly components
+#
+
+deploy: 
+	# populate deployment directory for copying into image bakes
+	# make dirs
+	mkdir -p deployment/usr/lib
+	mkdir -p deployment/usr/include/GLES2D
+	# copy in goodies
+	cp libGLES2D* deployment/usr/lib
+	cp include/GLES2D/* deployment/usr/include/GLES2D
 
