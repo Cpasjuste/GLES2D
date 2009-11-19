@@ -32,7 +32,7 @@ char *_str_sub (const char *s, unsigned int start, unsigned int end)
 		}
 		else
 		{
-			printf ("Fail -> _str_sub\n");
+			gprintf ("Fail -> _str_sub\n");
 		}
 	}
    	return new_s;
@@ -92,7 +92,7 @@ GDECLSPEC GLES2D_Font *GLES2D_CreateFont( char *filename, int style, int size )
 	ttffont = TTF_OpenFont( filename, size );
 	if ( ttffont == NULL )
 	{
-		printf( "ERROR opening font: %s\n", TTF_GetError() );
+		gprintf( "ERROR opening font: %s\n", TTF_GetError() );
 		return NULL;
 	}
 
@@ -108,12 +108,12 @@ GDECLSPEC GLES2D_Font *GLES2D_CreateFont( char *filename, int style, int size )
 		surf = TTF_RenderGlyph_Blended( ttffont, i, white );
 		if ( surf == NULL )
 		{
-			printf( "ERROR rendering glyph %c: %s\n", (char)i, TTF_GetError() );
+			gprintf( "ERROR rendering glyph %c: %s\n", (char)i, TTF_GetError() );
 			TTF_CloseFont( ttffont );
 			return NULL;			
 		}
 		
-		printf("%c: ", (char)i );
+		gprintf("%c: ", (char)i );
 		_font->texture[i] = GLES2D_CreateTextureFromSurface( surf, 0 );
 
 		TTF_GlyphMetrics( ttffont, i, NULL, NULL, &_font->miny[i], &_font->maxy[i], &( _font->advance[i] ) );
@@ -121,7 +121,7 @@ GDECLSPEC GLES2D_Font *GLES2D_CreateFont( char *filename, int style, int size )
 		if ( ( gl_error = glGetError()) != GL_NO_ERROR )
 		{
 			/* If this failed, the text may exceed texture size limits */
-			printf( "Warning: Couldn't create texture: 0x%x\n", gl_error );
+			gprintf( "Warning: Couldn't create texture: 0x%x\n", gl_error );
 			SDL_FreeSurface( surf );
 			TTF_CloseFont( ttffont );
 			return NULL;

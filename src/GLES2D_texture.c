@@ -118,7 +118,7 @@ GDECLSPEC GLES2D_Texture *GLES2D_CreateTextureFromSurface( SDL_Surface *surface,
 		switch ( tex->collision->format->BitsPerPixel )
 		{
 			case 8:
-				printf( "Loading surface (8bpp, " );
+				gprintf( "Loading surface (8bpp, " );
 				tex->format = RGB565;
 				GLinternalFormat = GL_RGB;
 				GLformat = GL_RGB;
@@ -127,7 +127,7 @@ GDECLSPEC GLES2D_Texture *GLES2D_CreateTextureFromSurface( SDL_Surface *surface,
 			break;
 
 			case 16:
-				printf( "Loading surface (16bpp, " );
+				gprintf( "Loading surface (16bpp, " );
 				tex->format = RGB565;
 				GLinternalFormat = GL_RGB;
 				GLformat = GL_RGB;
@@ -136,7 +136,7 @@ GDECLSPEC GLES2D_Texture *GLES2D_CreateTextureFromSurface( SDL_Surface *surface,
 			break;
 
 			case 24:
-				printf( "Loading surface (24bpp, " );
+				gprintf( "Loading surface (24bpp, " );
 				tex->format = RGB24;
 				GLinternalFormat = GL_RGB;
 				GLformat = GL_RGB;
@@ -146,7 +146,7 @@ GDECLSPEC GLES2D_Texture *GLES2D_CreateTextureFromSurface( SDL_Surface *surface,
 			break;
 
 			case 32:
-				printf( "Loading surface (32bpp, " );
+				gprintf( "Loading surface (32bpp, " );
 				tex->format = RGBA8888;
 				GLinternalFormat = GL_RGBA;
 				GLformat = GL_RGBA;
@@ -157,13 +157,13 @@ GDECLSPEC GLES2D_Texture *GLES2D_CreateTextureFromSurface( SDL_Surface *surface,
 			break;
 
 			default:
-				printf( "Unknown image format for surface" );
+				gprintf( "Unknown image format for surface" );
 				SDL_FreeSurface( tex->collision );
 				return 0;
 			break;
 		}
 
-		printf("image w/h: %i/%i, texture w/h: %i/%i )\n", tex->collision->w, tex->collision->h, w, h );
+		gprintf("image w/h: %i/%i, texture w/h: %i/%i )\n", tex->collision->w, tex->collision->h, w, h );
 
 		SDL_BlitSurface( tex->collision, 0, tmp, 0 );
         
@@ -184,7 +184,7 @@ GDECLSPEC GLES2D_Texture *GLES2D_CreateTextureFromSurface( SDL_Surface *surface,
 	} 
 	else
 	{
-		printf("SDL could not load texture from surface (%s) \n", SDL_GetError() );
+		gprintf("SDL could not load texture from surface (%s) \n", SDL_GetError() );
 		return 0;
 	}    
 
@@ -232,13 +232,13 @@ GDECLSPEC GLES2D_Texture *GLES2D_CreateTexture( char *filename, int storePixelsC
 
 		if ( tex == NULL )
 		{
-			printf("SDL could not load texture from surface (%s) \n", SDL_GetError() );
+			gprintf("SDL could not load texture from surface (%s) \n", SDL_GetError() );
 			return 0;
 		}
 	}
 	else
 	{
-		printf("SDL could not load texture from surface (%s) \n", SDL_GetError() );
+		gprintf("SDL could not load texture from surface (%s) \n", SDL_GetError() );
 		return 0;	
 	}
 

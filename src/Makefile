@@ -1,6 +1,6 @@
 
 #
-# libpnd Makefile
+# GLES2D Makefile
 #
 
 # tools
@@ -11,7 +11,6 @@ RANLIB = ${CROSSCOMPILE}ranlib
 RM = rm
 
 # environment
-VPATH = lib test apps
 CFLAG_SO = -fPIC #-fPIC not always needed, but good to have
 CFLAGS = -Wall -Werror -I./include -g ${CFLAG_SO}
 

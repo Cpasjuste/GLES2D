@@ -56,7 +56,7 @@ int GLES2D_TestEGLError( char* pszLocation )
 	EGLint iErr = eglGetError();
 	if (iErr != EGL_SUCCESS)
 	{
-		printf("%s failed (%d).\n", pszLocation, iErr);
+		gprintf("%s failed (%d).\n", pszLocation, iErr);
 		return 0;
 	}
 
@@ -90,7 +90,7 @@ GDECLSPEC int GLES2D_InitVideo( int w, int h, int fullscreen, int vsync, int fsa
 
 	if ( SDL_Init(SDL_INIT_VIDEO) != 0 )
 	{
-		printf("Unable to initialize SDL: %s\n", SDL_GetError());
+		gprintf("Unable to initialize SDL: %s\n", SDL_GetError());
 		return 1;
 	}
 
@@ -110,7 +110,7 @@ GDECLSPEC int GLES2D_InitVideo( int w, int h, int fullscreen, int vsync, int fsa
 
 	if ( TTF_Init() < 0 )
 	{
-		printf( "ERROR Initializing TTF Engine: %s\n", TTF_GetError() );
+		gprintf( "ERROR Initializing TTF Engine: %s\n", TTF_GetError() );
 		return 0;
 	}
 
@@ -121,7 +121,7 @@ GDECLSPEC int GLES2D_InitVideo( int w, int h, int fullscreen, int vsync, int fsa
 /*
 	if ( SDL_Init( SDL_INIT_JOYSTICK ) == -1 )
 	{
-		printf("Error : GLES2D_InitVideoMode @ SDL_Init( SDL_INIT_JOYSTICK ): %s\n", SDL_GetError());
+		gprintf("Error : GLES2D_InitVideoMode @ SDL_Init( SDL_INIT_JOYSTICK ): %s\n", SDL_GetError());
 	}
 	if ( SDL_NumJoysticks() > 0 )
 	{
@@ -146,7 +146,7 @@ GDECLSPEC int GLES2D_InitVideoRaw( int w, int h, int fullscreen, int vsync, int 
 	EGLint iMajorVersion, iMinorVersion;
 	if (!eglInitialize(GLES2D_eglDisplay, &iMajorVersion, &iMinorVersion))
 	{
-		printf("Error: eglInitialize() failed.\n");
+		gprintf("Error: eglInitialize() failed.\n");
 		GLES2D_Quit();
 		return 0;
 	}
@@ -166,7 +166,7 @@ GDECLSPEC int GLES2D_InitVideoRaw( int w, int h, int fullscreen, int vsync, int 
 	int iConfigs;
 	if (!eglChooseConfig(GLES2D_eglDisplay, pi32ConfigAttribs, &GLES2D_eglConfig, 1, &iConfigs) || (iConfigs != 1))
 	{
-		printf("Error: eglChooseConfig() failed.\n");
+		gprintf("Error: eglChooseConfig() failed.\n");
 		GLES2D_Quit();
 		exit(0);
 	}
@@ -215,7 +215,7 @@ GDECLSPEC int GLES2D_InitVideoX11( int w, int h, int fullscreen, int vsync, int 
 	x11Display = XOpenDisplay( ":0" );
 	if (!x11Display)
 	{
-		printf("Error: Unable to open X display\n");
+		gprintf("Error: Unable to open X display\n");
 		GLES2D_Quit();
 		return 0;
 	}
@@ -227,7 +227,7 @@ GDECLSPEC int GLES2D_InitVideoX11( int w, int h, int fullscreen, int vsync, int 
 	XMatchVisualInfo( x11Display, x11Screen, i32Depth, TrueColor, x11Visual);
 	if (!x11Visual)
 	{
-		printf("Error: Unable to acquire visual\n");
+		gprintf("Error: Unable to acquire visual\n");
 		GLES2D_Quit();
 		exit(0);
 	}
@@ -255,7 +255,7 @@ GDECLSPEC int GLES2D_InitVideoX11( int w, int h, int fullscreen, int vsync, int 
 	EGLint iMajorVersion, iMinorVersion;
 	if (!eglInitialize(GLES2D_eglDisplay, &iMajorVersion, &iMinorVersion))
 	{
-		printf("Error: eglInitialize() failed.\n");
+		gprintf("Error: eglInitialize() failed.\n");
 		GLES2D_Quit();
 		return 0;
 	}
@@ -276,7 +276,7 @@ GDECLSPEC int GLES2D_InitVideoX11( int w, int h, int fullscreen, int vsync, int 
 	int iConfigs;
 	if (!eglChooseConfig(GLES2D_eglDisplay, pi32ConfigAttribs, &GLES2D_eglConfig, 1, &iConfigs) || (iConfigs != 1))
 	{
-		printf("Error: eglChooseConfig() failed.\n");
+		gprintf("Error: eglChooseConfig() failed.\n");
 		GLES2D_Quit();
 		return 0;
 	}
@@ -325,7 +325,7 @@ GDECLSPEC int GLES2D_SwapBuffers()
 		{
 			int ret = 0;
 			ret = ioctl(fd, FBIO_WAITFORVSYNC, &ret );
-			if ( ret != 0 ) printf("FBIO_WAITFORVSYNC failed: %d\n", ret );
+			if ( ret != 0 ) gprintf("FBIO_WAITFORVSYNC failed: %d\n", ret );
 		}
 		close(fd);
 	}
@@ -357,7 +357,7 @@ GDECLSPEC int GLES2D_Quit()
 	{
 		if( SDL_JoystickOpened( GLES2D_JoystickNum ) )
 		{
-			printf("GLES2D_Quit: SDL_JoystickClose()\n");
+			gprintf("GLES2D_Quit: SDL_JoystickClose()\n");
                 	SDL_JoystickClose( GLES2D_joy );
 		}
 	}
