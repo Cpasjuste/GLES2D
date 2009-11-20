@@ -141,16 +141,21 @@ GDECLSPEC void _GLES2D_DrawFont( GLES2D_Font *font, int x, int y, char *str, int
 	{
 		i = (int)*str;
 
+		/* crasy hack, understand nothing */
+		int y2 = font->miny[i];
+		if ( font->miny[i] )
+			y2 += 2;
+
 		if ( minx || maxx )
 		{
 			if ( ( x > minx ) && ( x < maxx ) )
-			{;
-				GLES2D_DrawTextureSimple( font->texture[i], x, (y + ( ( abs(font->miny[i])/2 ) - font->maxy[i] )) +10 );
+			{
+				GLES2D_DrawTextureSimple( font->texture[i], x, ( y + ( ( abs(y2)/2 ) - font->maxy[i] ) ) +10 );
 			}
 		}
 		else
 		{
-			GLES2D_DrawTextureSimple( font->texture[i], x, (y + ( ( abs(font->miny[i])/2 ) - font->maxy[i] )) +10 );
+			GLES2D_DrawTextureSimple( font->texture[i], x, ( y + ( ( abs(y2)/2 ) - font->maxy[i] ) ) +10 );
 		}
 		
 		x += font->advance[i];
