@@ -12,6 +12,7 @@
 #include <GLES2D/GLES2D_texture.h>
 #include <GLES2D/GLES2D_drawing.h>
 
+unsigned int GLES2D_CreateTexturePVRFromPointer( int *w, int *h, const void * const pointer, GLuint * const texName );
 GDECLSPEC void GLES2D_Enable2D();
 GDECLSPEC void GLES2D_Disable2D();
 
@@ -220,6 +221,89 @@ GDECLSPEC GLES2D_Texture *GLES2D_CreateTextureFromSurface( SDL_Surface *surface,
 	return tex;
 }
 
+GDECLSPEC GLES2D_Texture *GLES2D_CreateTextureFromPVR( char *filename )
+{
+	GLES2D_Texture *tex;
+	tex = (GLES2D_Texture *) malloc( sizeof( GLES2D_Texture ) );
+
+	GLES2D_Rect *src;
+	src = (GLES2D_Rect *) malloc( sizeof( GLES2D_Rect ) );
+
+	GLES2D_Rect *dst;
+	dst = (GLES2D_Rect *) malloc( sizeof( GLES2D_Rect ) );
+
+	tex->src = src;
+	tex->dst = dst;
+
+	int width = 0, height = 0;
+	size_t m_Size = 0;
+
+	FILE* pFile = fopen( filename, "rb" );
+	if (pFile)
+	{
+		// Get the file size
+		fseek( pFile, 0, SEEK_END );
+		m_Size = ftell( pFile );
+		fseek( pFile, 0, SEEK_SET );
+
+		// read the data, append a 0 byte as the data might represent a string
+		char* pData = malloc( m_Size + 1 );
+		pData[m_Size] = '\0';
+		size_t BytesRead = fread(pData, 1, m_Size, pFile);
+
+		if (BytesRead != m_Size)
+		{
+			free( pData );
+			printf( " Unable to read %s\n", filename );
+			return 0;
+		}
+		fclose(pFile);
+
+		GLES2D_CreateTexturePVRFromPointer( &width, &height, pData, &tex->texID );
+		printf(" width:%i || eight:%i \n", width, height );
+		if ( tex == NULL )
+		{
+			printf( "Could not load texture from pvr\n" );
+			return 0;
+		}
+	}
+	else
+	{
+		printf( " Unable to open %s\n", filename );
+		return 0;
+	}
+
+	tex->texw = 1;
+	tex->texh = 1;
+	tex->format = RGB565;
+	tex->src->w = width;
+	tex->src->h = height;
+	tex->src->x = 0;
+	tex->src->y = 0;
+	tex->dst->w = width;
+	tex->dst->h = height;
+	tex->dst->x = 0;
+	tex->dst->y = 0;
+	tex->image_w = width;
+	tex->image_h = height;
+	tex->isbuffer = 0;
+	tex->filtering = 0;
+	tex->centered = 0;
+	tex->rotation = 0;
+	tex->color[0] = 1.0f;
+	tex->color[1] = 1.0f;
+	tex->color[2] = 1.0f;
+	tex->color[3] = 1.0f;
+	tex->colorAlpha[0] = 1.0f;
+	tex->colorAlpha[1] = 1.0f;
+	tex->colorAlpha[2] = 1.0f;
+	tex->collision_set = 0;
+	tex->flipX = 0;
+	tex->flipY = 0;
+
+	return tex;
+}
+
 GDECLSPEC GLES2D_Texture *GLES2D_CreateTexture( char *filename, int storePixelsColors )
 {
 	GLES2D_Texture *tex = NULL;
@@ -250,9 +334,9 @@ void GLES2D_DrawTexture( GLES2D_Texture *texture, GLES2D_Rect *src, GLES2D_Rect 
 {
 	if ( texture->format == RGBA8888 )
 	{
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+//		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
 	glEnable( GL_TEXTURE_2D );
@@ -516,10 +600,10 @@ GDECLSPEC void GLES2D_FreeTexture( GLES2D_Texture *texture )
 	GLES2D_Texture *tex;
 	tex = texture;
 
-	if ( texture->collision_set )
-		SDL_FreeSurface ( texture->collision );
+	if ( tex->collision_set )
+		SDL_FreeSurface ( tex->collision );
 
-	glDeleteTextures( 1, &texture->texID );
+	glDeleteTextures( 1, &tex->texID );
 
 	free ( tex->dst );
 	free ( tex->src );

@@ -10,6 +10,10 @@
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
 
+GDECLSPEC KeySym GLES2D_XKeycodeToKeysym ( int Keycode );
+
+#define XK_PND GLES2D_XKeycodeToKeysym(147)
+
 /* Logitech Precision GamePad keycodes */
 #define PAD_UP 100
 #define PAD_DOWN 101

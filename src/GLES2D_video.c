@@ -12,6 +12,8 @@
 #include <SDL/SDL_image.h>
 #include <SDL/SDL_ttf.h>
 #include <GLES2D/GLES2D_platform.h>
+#include <GLES2D/GLES2D_video.h>
+#include "GLES2D_common.h"
 
 #ifdef _PANDORA_
 #include <linux/matroxfb.h>
@@ -22,10 +24,10 @@
 static int vsync_on = 0;
 extern void PND_Setup_Controls( void );
 extern void PND_Close_Controls( void );
-#else
+#endif
+
 extern int GLES2D_JoystickNum;
 extern SDL_Joystick * GLES2D_joy;
-#endif
 
 int GLES2D_Quit();
 int GLES2D_InitVideoRaw( int w, int h, int fullscreen, int vsync, int fsaa );
@@ -72,6 +74,10 @@ GDECLSPEC void GLES2D_Enable2D()
 	glOrthof(0.0f, GLES2D_SCRw, GLES2D_SCRh, 0.0f, -1.0f, 1.0f);
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
+
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 GDECLSPEC void GLES2D_Disable2D()
@@ -83,10 +89,11 @@ GDECLSPEC void GLES2D_Disable2D()
 	glEnable(GL_DEPTH_TEST);
 }
 
-GDECLSPEC int GLES2D_InitVideo( int w, int h, int fullscreen, int vsync, int fsaa )
+GDECLSPEC int GLES2D_InitVideo( int w, int h, int fullscreen, int vsync, int fsaa, int video_mode )
 {
 	GLES2D_SCRw = w;
 	GLES2D_SCRh = h;
+	GLES2D_x11Video = 0;
 
 	if ( SDL_Init(SDL_INIT_VIDEO) != 0 )
 	{
@@ -94,13 +101,17 @@ GDECLSPEC int GLES2D_InitVideo( int w, int h, int fullscreen, int vsync, int fsa
 		return 1;
 	}
 
-#ifdef _X11_
-	if ( ! GLES2D_InitVideoX11( w, h, fullscreen, vsync, fsaa ) )
-		return 0;
-#else
-	if ( ! GLES2D_InitVideoRaw( w, h, fullscreen, vsync, fsaa ) )
-		return 0;
-#endif
+	if ( video_mode == VIDEO_X11 )
+	{
+		GLES2D_x11Video = 1;
+		if ( ! GLES2D_InitVideoX11( w, h, fullscreen, vsync, fsaa ) )
+			return 0;
+	}
+	else
+	{
+		if ( ! GLES2D_InitVideoRaw( w, h, fullscreen, vsync, fsaa ) )
+			return 0;
+	}
 
 	GLES2D_Enable2D();
 
@@ -117,25 +128,36 @@ GDECLSPEC int GLES2D_InitVideo( int w, int h, int fullscreen, int vsync, int fsa
 	GLES2D_CreateParticle();
 
 
-#ifdef _X11_
-/*
-	if ( SDL_Init( SDL_INIT_JOYSTICK ) == -1 )
+	if ( GLES2D_x11Video )
 	{
-		gprintf("Error : GLES2D_InitVideoMode @ SDL_Init( SDL_INIT_JOYSTICK ): %s\n", SDL_GetError());
+		char cmd[512];
+		strcpy( cmd, "xset r rate 500 10" );
+		system( cmd );
+	/*
+		if ( SDL_Init( SDL_INIT_JOYSTICK ) == -1 )
+		{
+			gprintf("Error : GLES2D_InitVideoMode @ SDL_Init( SDL_INIT_JOYSTICK ): %s\n", SDL_GetError());
+		}
+		if ( SDL_NumJoysticks() > 0 )
+		{
+			GLES2D_JoystickNum = 0;
+			GLES2D_joy = SDL_JoystickOpen( GLES2D_JoystickNum );
+		}
+		else
+		{
+			GLES2D_JoystickNum = 255;
+		}
+	*/
 	}
-	if ( SDL_NumJoysticks() > 0 )
-	{
-		GLES2D_JoystickNum = 0;
-		GLES2D_joy = SDL_JoystickOpen( GLES2D_JoystickNum );
-	}
-	else
-	{
-		GLES2D_JoystickNum = 255;
-	}
-*/
-#else
-	PND_Setup_Controls();
+//	else
+//	{
+#ifdef _PANDORA_
+		PND_Setup_Controls();
+//#else
+//		printf( "FB Video mode not supported on i386 linux\n" );
 #endif
+//	}
+
 	return 1;
 }
 
@@ -347,24 +369,33 @@ GDECLSPEC int GLES2D_Quit()
 	eglDestroySurface ( GLES2D_eglDisplay, GLES2D_eglSurface );
 	eglTerminate ( GLES2D_eglDisplay );
 
-#ifdef _X11_
-	if (x11Window) XDestroyWindow(x11Display, x11Window);
-	if (x11Colormap) XFreeColormap( x11Display, x11Colormap );
-	if (x11Display) XCloseDisplay(x11Display);
-
-/*
-	if ( GLES2D_JoystickNum != 255 )
+	if ( GLES2D_x11Video )
 	{
-		if( SDL_JoystickOpened( GLES2D_JoystickNum ) )
+		if (x11Window) XDestroyWindow(x11Display, x11Window);
+		if (x11Colormap) XFreeColormap( x11Display, x11Colormap );
+		if (x11Display) XCloseDisplay(x11Display);
+
+		char cmd[512];
+		strcpy( cmd, "xset r rate 500 30" );
+		system( cmd );
+	/*
+		if ( GLES2D_JoystickNum != 255 )
 		{
-			gprintf("GLES2D_Quit: SDL_JoystickClose()\n");
-                	SDL_JoystickClose( GLES2D_joy );
+			if( SDL_JoystickOpened( GLES2D_JoystickNum ) )
+			{
+				gprintf("GLES2D_Quit: SDL_JoystickClose()\n");
+		        	SDL_JoystickClose( GLES2D_joy );
+			}
 		}
+	*/
 	}
-*/
-#else
-	PND_Close_Controls( );
+	else
+	{
+#ifdef _PANDORA_
+		PND_Close_Controls( );
 #endif
+	}
+
 	TTF_Quit();
 	SDL_Quit();
 

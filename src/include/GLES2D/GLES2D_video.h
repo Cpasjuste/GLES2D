@@ -2,6 +2,8 @@
 #define __GLES2D_VIDEO_H__
 
 #define FULLSCREEN 1
+#define VIDEO_FB 0
+#define VIDEO_X11 1
 
 /**
   * Init GLES 1.1 video driver and screen.
@@ -21,7 +23,7 @@
   *
   * @return 1 on success, 0 on error.
   */
-GDECLSPEC int GLES2D_InitVideo( int w, int h, int fullscreen, int vsync, int fsaa );
+GDECLSPEC int GLES2D_InitVideo( int w, int h, int fullscreen, int vsync, int fsaa, int video_mode );
 
 GDECLSPEC int GLES2D_SwapBuffers();
 

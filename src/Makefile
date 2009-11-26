@@ -14,9 +14,7 @@ RM = rm
 CFLAG_SO = -fPIC #-fPIC not always needed, but good to have
 CFLAGS = -Wall -Werror -I./include -g ${CFLAG_SO}
 
-ifdef X11
-CFLAGS += -D_X11_
-else
+ifdef CROSSCOMPILE
 CFLAGS += -D_PANDORA_ -I$(PNDSDK)/usr/include -O3 -march=armv7-a -mcpu=cortex-a8 -mtune=cortex-a8 -mfloat-abi=softfp \
 		-mfpu=neon -ftree-vectorize -ffast-math -fomit-frame-pointer -fno-strict-aliasing -fsingle-precision-constant
 endif
@@ -27,7 +25,7 @@ SOLIB = libGLES2D.so.1         # canonicle name
 SOLIB1 = libGLES2D.so.1.0.1    # versioned name
 ALLOBJ = GLES2D_video.o GLES2D_texture.o GLES2D_control.o GLES2D_control_pnd.o GLES2D_font.o \
 		GLES2D_tiles.o GLES2D_drawing.o GLES2D_utils.o GLES2D_collision.o GLES2D_sprite.o \
-		GLES2D_particle.o
+		GLES2D_particle.o GLES2D_pvrtc.o
 
 all: ${SOLIB} ${LIB}
 

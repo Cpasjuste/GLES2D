@@ -140,22 +140,25 @@ GDECLSPEC void _GLES2D_DrawFont( GLES2D_Font *font, int x, int y, char *str, int
 	while (*str != 0)
 	{
 		i = (int)*str;
-
-		/* crasy hack, understand nothing */
-		int y2 = font->miny[i];
-		if ( font->miny[i] )
-			y2 += 2;
-
-		if ( minx || maxx )
+		
+		if ( ( i >= ' ' ) && ( i <= '~' ) )
 		{
-			if ( ( x > minx ) && ( x < maxx ) )
+			/* crasy hack, understand nothing */
+			int y2 = font->miny[i];
+			if ( font->miny[i] )
+				y2 += 2;
+
+			if ( minx || maxx )
+			{
+				if ( ( x >= minx ) && ( x < maxx ) )
+				{
+					GLES2D_DrawTextureSimple( font->texture[i], x, ( y + ( ( abs(y2)/2 ) - font->maxy[i] ) ) +10 );
+				}
+			}
+			else
 			{
 				GLES2D_DrawTextureSimple( font->texture[i], x, ( y + ( ( abs(y2)/2 ) - font->maxy[i] ) ) +10 );
 			}
-		}
-		else
-		{
-			GLES2D_DrawTextureSimple( font->texture[i], x, ( y + ( ( abs(y2)/2 ) - font->maxy[i] ) ) +10 );
 		}
 		
 		x += font->advance[i];
@@ -234,7 +237,7 @@ GDECLSPEC void GLES2D_DrawFontBox( GLES2D_Font *font, int x, int y, int width, i
 		int word_pixels = GLES2D_GetTextWidth( font, word[i] );
 		int line_pixels = GLES2D_GetTextWidth( font, line[n] );
 
-		if ( ( line_pixels + word_pixels ) >= width )
+		if ( ( line_pixels + word_pixels + 10 ) >= width )
 		{
 			n++;
 		}

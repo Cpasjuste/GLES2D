@@ -23,6 +23,8 @@ extern int GLES2D_TestEGLError( char* pszLocation );
 
 GDECLSPEC int GLES2D_ClearScreen( Uint8 r, Uint8 g, Uint8 b, Uint8 a )
 {
+	glEnable(GL_BLEND);
+
 	GLfloat _r = r/255.0, _g = g/255.0, _b = b/255.0, _a = a/255.0;
 
 	glClearColor( _r, _g, _b, _a );
@@ -33,12 +35,14 @@ GDECLSPEC int GLES2D_ClearScreen( Uint8 r, Uint8 g, Uint8 b, Uint8 a )
 		return 0;
 	}
 
+	glDisable(GL_BLEND);
 	return 1;
 }
 
 GDECLSPEC void GLES2D_DrawPoint( int x, int y )
 {
-	glDisable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+//	glDisable(GL_TEXTURE_2D);
 
 	GLshort vertices[2];
 	vertices[0] = x;
@@ -49,7 +53,8 @@ GDECLSPEC void GLES2D_DrawPoint( int x, int y )
 	glDrawArrays(GL_POINTS, 0, 1);
 	glDisableClientState(GL_VERTEX_ARRAY);
 
-	glEnable(GL_TEXTURE_2D);
+	glDisable(GL_BLEND);
+//	glEnable(GL_TEXTURE_2D);
 }
 
 GDECLSPEC void GLES2D_DrawEllipse (int segments, float width, float height, int x, int y, int filled)
@@ -72,18 +77,22 @@ GDECLSPEC void GLES2D_DrawEllipse (int segments, float width, float height, int 
 
 GDECLSPEC void GLES2D_DrawCircle (int circleSegments, float circleSize, int x, int y, int filled) 
 {
-	glDisable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+
+//	glDisable(GL_TEXTURE_2D);
 	glPushMatrix();
 	
 	GLES2D_DrawEllipse(circleSegments, circleSize, circleSize, x, y, filled);
 
 	glPopMatrix();
-	glEnable(GL_TEXTURE_2D);
+	glDisable(GL_BLEND);
+//	glEnable(GL_TEXTURE_2D);
 }
 
 GDECLSPEC void GLES2D_DrawRectangle( int x, int y, int w, int h )
 {
-	glDisable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+//	glDisable(GL_TEXTURE_2D);
 
 	GLshort minx = x;
 	GLshort maxx = x + w;
@@ -105,12 +114,15 @@ GDECLSPEC void GLES2D_DrawRectangle( int x, int y, int w, int h )
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glDisableClientState(GL_VERTEX_ARRAY);
 
-	glEnable(GL_TEXTURE_2D);	
+	glDisable(GL_BLEND);
+//	glEnable(GL_TEXTURE_2D);	
 }
 
 GDECLSPEC void GLES2D_DrawLine( int x1, int y1, int x2, int y2 )
 {
-	glDisable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+
+//	glDisable(GL_TEXTURE_2D);
 
 	GLshort vertices[4];
 	vertices[0] = x1;
@@ -123,14 +135,17 @@ GDECLSPEC void GLES2D_DrawLine( int x1, int y1, int x2, int y2 )
 	glDrawArrays(GL_LINES, 0, 2);
 	glDisableClientState(GL_VERTEX_ARRAY);
 
-	glEnable(GL_TEXTURE_2D);
+	glDisable(GL_BLEND);
+//	glEnable(GL_TEXTURE_2D);
 } 
 
 GDECLSPEC void GLES2D_DrawTriangle( int ax, int ay, int bx, int by, int cx, int cy)
 {
+	glEnable(GL_BLEND);
+
 	GLshort vertices[3 * 2];
 
-	glDisable(GL_TEXTURE_2D);
+//	glDisable(GL_TEXTURE_2D);
 
 	vertices[0] = ax;	vertices[1] = ay;
 	vertices[2] = bx;	vertices[3] = by;
@@ -141,7 +156,8 @@ GDECLSPEC void GLES2D_DrawTriangle( int ax, int ay, int bx, int by, int cx, int 
 
 	glDrawArrays( GL_TRIANGLES , 0, 4 );
 
-	glEnable(GL_TEXTURE_2D);
+	glDisable(GL_BLEND);
+//	glEnable(GL_TEXTURE_2D);
 }
 
 GDECLSPEC void GLES2D_DrawParticle(int x, int y, int w, int r, int g, int b, int a)

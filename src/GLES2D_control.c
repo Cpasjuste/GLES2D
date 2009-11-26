@@ -13,6 +13,7 @@
 #include <X11/Xos.h>
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
+#include "GLES2D_common.h"
 
 #ifdef _PANDORA_
 extern void PND_SendKeyEvents( );
@@ -132,15 +133,18 @@ void joyDown(int axis, int value)
 GDECLSPEC int GLES2D_PadPressed ( int num )
 {
 #ifdef _PANDORA_
-	static int GLES2D_Pad_old[12];
+//	if ( ! GLES2D_x11Video )
+//	{
+		static int GLES2D_Pad_old[12];
 
-	if ( !GLES2D_Pad_old[num] && GLES2D_Pad[num] )
-	{
-		GLES2D_Pad_old[num] = GLES2D_Pad[num];
-		return 1;
-	}
+		if ( !GLES2D_Pad_old[num] && GLES2D_Pad[num] )
+		{
+			GLES2D_Pad_old[num] = GLES2D_Pad[num];
+			return 1;
+		}
 	
-	GLES2D_Pad_old[num] = GLES2D_Pad[num];
+		GLES2D_Pad_old[num] = GLES2D_Pad[num];
+//	}
 #endif
 	return 0;
 
@@ -149,26 +153,28 @@ GDECLSPEC int GLES2D_PadPressed ( int num )
 GDECLSPEC int GLES2D_PadHold ( int num )
 {
 #ifdef _PANDORA_
-	if ( ( GLES2D_now - GLES2D_start ) >= GLES2D_delay )
-	{
-		GLES2D_timerset = 0;
-	}
+//	if ( ! GLES2D_x11Video )
+//	{
+		if ( ( GLES2D_now - GLES2D_start ) >= GLES2D_delay )
+		{
+			GLES2D_timerset = 0;
+		}
 
-	if ( ! GLES2D_timerset )
-	{
-		if ( GLES2D_Pad[num] ) return 1;
-	}
+		if ( ! GLES2D_timerset )
+		{
+			if ( GLES2D_Pad[num] ) return 1;
+		}
+//	}
 #endif
 	return 0;
 }
 
-
 GDECLSPEC int GLES2D_KeyboardPressed ( KeySym key )
 {
-#ifdef _X11_
+#ifndef _PANDORA_
 	static unsigned int GLES2D_Keyboard_old[256];
 
-	if ( !GLES2D_Keyboard_old[XKeysymToKeycode(x11Display, key)] && GLES2D_Keyboard[XKeysymToKeycode(x11Display, key)] )
+	if ( ! GLES2D_Keyboard_old[XKeysymToKeycode(x11Display, key)] && GLES2D_Keyboard[XKeysymToKeycode(x11Display, key)] )
 	{
 		GLES2D_Keyboard_old[XKeysymToKeycode(x11Display, key)] = GLES2D_Keyboard[XKeysymToKeycode(x11Display, key)];
 		return 1;
@@ -181,20 +187,28 @@ GDECLSPEC int GLES2D_KeyboardPressed ( KeySym key )
 
 GDECLSPEC int GLES2D_KeyboardHold ( KeySym key )
 {
-#ifdef _X11_
-	if ( ( GLES2D_now - GLES2D_start ) >= GLES2D_delay )
-	{
-		GLES2D_timerset = 0;
-	}
+#ifndef _PANDORA_
 
-	if ( ! GLES2D_timerset )
-	{
-		if ( GLES2D_Keyboard[XKeysymToKeycode(x11Display, key)] ) return 1;		
-	}
+		//return GLES2D_KeyboardPressed ( key );
+	/*
+		if ( ( GLES2D_now - GLES2D_start ) >= GLES2D_delay )
+		{
+			GLES2D_timerset = 0;
+		}
+
+		if ( ! GLES2D_timerset )
+		{
+			if ( GLES2D_Keyboard[XKeysymToKeycode(x11Display, key)] ) return 1;		
+		}
+	*/
 #endif
 	return 0;
 }
 
+GDECLSPEC KeySym GLES2D_XKeycodeToKeysym ( int Keycode )
+{
+	return XKeycodeToKeysym( x11Display, Keycode, 0 );
+}
 
 GDECLSPEC void GLES2D_HandleEvents( int delay )
 {
@@ -209,8 +223,12 @@ GDECLSPEC void GLES2D_HandleEvents( int delay )
 	GLES2D_now = SDL_GetTicks();
 
 #ifdef _PANDORA_
- 	/* Pandora Joystick input */
-	PND_SendKeyEvents( );
+//	if ( ! GLES2D_x11Video )
+//	{
+ 		/* Pandora Joystick input */
+		PND_SendKeyEvents( );
+//	}
+//	else
 #else
 /*
 	if ( GLES2D_JoystickNum != 255 )
@@ -233,33 +251,32 @@ GDECLSPEC void GLES2D_HandleEvents( int delay )
 		}
 	}
 */
-#endif
 
-#ifdef _X11_
-
-	if ( XPending( x11Display ) )
 	{
-		XNextEvent( x11Display, &GLES2D_event );
-
-		switch( GLES2D_event.type )
+		if ( XPending( x11Display ) )
 		{
-			// Exit on mouse click
-			case ButtonPress:
-				GLES2D_Quit();
-				exit(0);
-			break;
+			XNextEvent( x11Display, &GLES2D_event );
 
-			case KeyPress:
-	  			GLES2D_Keyboard[ XKeysymToKeycode(x11Display, (XLookupKeysym( &GLES2D_event.xkey, 0 ))) ] = 1;
-			break;
+			switch( GLES2D_event.type )
+			{
+				// Exit on mouse click
+				case ButtonPress:
+					//GLES2D_Quit();
+					//exit(0);
+				break;
 
-			case KeyRelease:
-				GLES2D_Keyboard[ XKeysymToKeycode(x11Display, (XLookupKeysym( &GLES2D_event.xkey, 0 ))) ] = 0;
-			break;
+				case KeyPress:
+		  			GLES2D_Keyboard[ XKeysymToKeycode(x11Display, (XLookupKeysym( &GLES2D_event.xkey, 0 ))) ] = 1;
+				break;
+
+				case KeyRelease:
+					GLES2D_Keyboard[ XKeysymToKeycode(x11Display, (XLookupKeysym( &GLES2D_event.xkey, 0 ))) ] = 0;
+				break;
 
 
-			default:
-			break;
+				default:
+				break;
+			}
 		}
 	}
 #endif
