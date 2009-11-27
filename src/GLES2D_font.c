@@ -116,7 +116,7 @@ GDECLSPEC GLES2D_Font *GLES2D_CreateFont( char *filename, int style, int size )
 		gprintf("%c: ", (char)i );
 		_font->texture[i] = GLES2D_CreateTextureFromSurface( surf, 0 );
 
-		TTF_GlyphMetrics( ttffont, i, NULL, NULL, &_font->miny[i], &_font->maxy[i], &( _font->advance[i] ) );
+		TTF_GlyphMetrics( ttffont, i, &_font->minx[i], &_font->maxx[i], &_font->miny[i], &_font->maxy[i], &( _font->advance[i] ) );
 		
 		if ( ( gl_error = glGetError()) != GL_NO_ERROR )
 		{
@@ -150,18 +150,18 @@ GDECLSPEC void _GLES2D_DrawFont( GLES2D_Font *font, int x, int y, char *str, int
 
 			if ( minx || maxx )
 			{
-				if ( ( x >= minx ) && ( x < maxx ) )
+				if ( ( x >= minx ) && ( x + font->advance[i] < maxx ) )
 				{
 					GLES2D_DrawTextureSimple( font->texture[i], x, ( y + ( ( abs(y2)/2 ) - font->maxy[i] ) ) +10 );
 				}
 			}
 			else
 			{
-				GLES2D_DrawTextureSimple( font->texture[i], x, ( y + ( ( abs(y2)/2 ) - font->maxy[i] ) ) +10 );
+				GLES2D_DrawTextureSimple( font->texture[i], ( x + font->minx[i] ), ( y + ( ( abs(y2)/2 ) - font->maxy[i] ) ) +10 );
 			}
+
+			x += font->advance[i];
 		}
-		
-		x += font->advance[i];
 		str++;
 	}
 }
@@ -176,6 +176,10 @@ GDECLSPEC void GLES2D_DrawFont( GLES2D_Font *font, int x, int y, char *str )
 	_GLES2D_DrawFont( font, x, y, str, 0, 0 );
 }
 
+GDECLSPEC void GLES2D_DrawFontCut( GLES2D_Font *font, int x, int y, int x_max, char *str )
+{
+	_GLES2D_DrawFont( font, x, y, str, x, x_max );
+}
 
 GDECLSPEC int GLES2D_GetTextWidth( GLES2D_Font *font, char *str )
 {
@@ -184,7 +188,10 @@ GDECLSPEC int GLES2D_GetTextWidth( GLES2D_Font *font, char *str )
 	while (*str != 0)
 	{
 		i = (int)*str;
-		width += font->advance[i];
+		if ( ( i >= ' ' ) && ( i <= '~' ) )
+		{
+			width += font->advance[i];
+		}
 		str++;
 	}	
 
@@ -299,6 +306,19 @@ GDECLSPEC void GLES2D_SetFontAlpha( GLES2D_Font *font, int alpha )
 			font->texture[i]->color[1] = 1.0f;
 			font->texture[i]->color[2] = 1.0f;
 			font->texture[i]->color[3] = _a;
+		}
+	}
+}
+
+GDECLSPEC void GLES2D_SetFontFiltering( GLES2D_Font *font, int param )
+{
+	int i;
+
+	for ( i = ' '; i <= '~'; i++ )
+	{
+		if ( font->texture[i] != NULL )
+		{
+			GLES2D_SetTextureFiltering( font->texture[i], 1 );
 		}
 	}
 }
