@@ -14,68 +14,59 @@
 #include <GLES2D/GLES2D_drawing.h>
 #include <GLES2D/GLES2D_font.h>
 
-char *_str_sub (const char *s, unsigned int start, unsigned int end)
+GDECLSPEC GLES2D_FontCache *GLES2D_CreateFontCache( char *filename, char *string, int style, int size, int width )
 {
-	char *new_s = NULL;
+	SDL_Color white = {0xFF, 0xFF, 0xFF, 0x00};
+	GLES2D_FontCache *_font;
 
-	if (s != NULL && start < end)
+	_font = (GLES2D_FontCache *) malloc( sizeof( GLES2D_FontCache ) );
+
+	TTF_Font *ttffont = TTF_OpenFont( filename, size );
+
+	if ( ttffont == NULL )
 	{
-		new_s = (char*)malloc (sizeof (*new_s) * (end - start + 2));
-		if (new_s != NULL)
-		{
-			int i;
-			for (i = start; i <= end; i++)
-			{
-				new_s[i-start] = s[i];
-			}
-			new_s[i-start] = '\0';
-		}
-		else
-		{
-			gprintf ("Fail -> _str_sub\n");
-		}
+		gprintf( "ERROR opening font: %s\n", TTF_GetError() );
+		return NULL;
 	}
-   	return new_s;
-}
 
-char **str_split (char *s, const char *ct)
-{
-	char **tab = NULL;
+	TTF_SetFontStyle( ttffont, style );
+	
+	_font->ascent = TTF_FontAscent( ttffont );
+	_font->descent = TTF_FontDescent( ttffont );
+	_font->height = TTF_FontHeight( ttffont );
+	_font->lineskip = TTF_FontLineSkip( ttffont );
 
-	if (s != NULL && ct != NULL)
+	printf("ascent : %i || descent : %i || lineskip : %i || height : %i\n", _font->ascent, _font->descent, _font->lineskip, _font->height );
+
+	int i = 0;
+	char msg[512];
+	int w = 0;
+
+	int msg_lenght = strlen( string );
+	for ( i = 0; i < msg_lenght; i++ )
 	{
-		int i;
-		char *cs = NULL;
-		size_t size = 1;
-
-
-		for (i = 0; (cs = strtok (s, ct)); i++)
-		{
-			if (size <= i + 1)
-			{
-				void *tmp = NULL;
-
-				size <<= 1;
-				tmp = realloc (tab, sizeof (*tab) * size);
-				if (tmp != NULL)
-				{
-					tab = (char**)tmp;
-				}
-				else
-				{
-					fprintf (stderr, "Memoire insuffisante\n");
-					free (tab);
-					tab = NULL;
-					exit (EXIT_FAILURE);
-				}
-			}
-
-			tab[i] = cs;
-			s = NULL;
-		}
-		tab[i] = NULL;
+		memset( msg, 0, 512 );
+		strncpy( msg, string, i );
+		TTF_SizeText( ttffont, msg, &w, NULL );
+		
+		if ( w >= 800 || w >= width )
+			break;
 	}
-	return tab;
+
+	memset( msg, 0, 512 );
+	strncpy( msg, string, i );
+
+	TTF_SizeText( ttffont, msg, &_font->width, &_font->height );
+
+	SDL_Surface *surface = TTF_RenderText_Blended( ttffont, msg, white );
+
+	_font->texture = GLES2D_CreateTextureFromSurface( surface, 0 );
+
+	SDL_FreeSurface( surface );
+
+	TTF_CloseFont( ttffont );
+
+	return _font;
 }
 
 GDECLSPEC GLES2D_Font *GLES2D_CreateFont( char *filename, int style, int size )
@@ -103,7 +94,7 @@ GDECLSPEC GLES2D_Font *GLES2D_CreateFont( char *filename, int style, int size )
 	_font->height = TTF_FontHeight( ttffont );
 	_font->lineskip = TTF_FontLineSkip( ttffont );
 
-	for ( i = ' '; i <= '~'; i++ )
+	for ( i = 0; i < 128; i++ )
 	{
 		surf = TTF_RenderGlyph_Blended( ttffont, i, white );
 		if ( surf == NULL )
@@ -134,6 +125,17 @@ GDECLSPEC GLES2D_Font *GLES2D_CreateFont( char *filename, int style, int size )
 	return _font;
 }
 
+GDECLSPEC void GLES2D_DrawFontCache( GLES2D_FontCache *font, int x, int y )
+{
+	GLES2D_DrawTextureSimple( font->texture, x, y  );
+}
+
+GDECLSPEC void GLES2D_DrawFontCacheCentered( GLES2D_FontCache *font, int x, int y )
+{
+	GLES2D_DrawTextureCentered( font->texture, x, y  );
+
+}
+
 GDECLSPEC void _GLES2D_DrawFont( GLES2D_Font *font, int x, int y, char *str, int minx, int maxx )
 {
 	int i;
@@ -141,23 +143,27 @@ GDECLSPEC void _GLES2D_DrawFont( GLES2D_Font *font, int x, int y, char *str, int
 	{
 		i = (int)*str;
 		
-		if ( ( i >= ' ' ) && ( i <= '~' ) )
+		if ( ( i >= 0 ) && ( i < 128 ) )
 		{
 			/* crasy hack, understand nothing */
 			int y2 = font->miny[i];
-			if ( font->miny[i] )
-				y2 += 2;
+			if ( font->miny[i] ) y2 += 2;
 
 			if ( minx || maxx )
 			{
-				if ( ( x >= minx ) && ( x + font->advance[i] < maxx ) )
+				glEnable( GL_SCISSOR_TEST );
+				glScissor( minx, 0, maxx - minx, 480 );
+
+				if ( ( x >= minx - font->advance[i] ) && ( x + font->advance[i] < maxx + font->advance[i] ) )
 				{
-					GLES2D_DrawTextureSimple( font->texture[i], x, ( y + ( ( abs(y2)/2 ) - font->maxy[i] ) ) +10 );
+					GLES2D_DrawTextureSimple( font->texture[i], x, ( y + ( ( abs(y2)/2 ) - font->maxy[i] ) ) + font->ascent );
 				}
+
+				glDisable( GL_SCISSOR_TEST );
 			}
 			else
 			{
-				GLES2D_DrawTextureSimple( font->texture[i], ( x + font->minx[i] ), ( y + ( ( abs(y2)/2 ) - font->maxy[i] ) ) +10 );
+				GLES2D_DrawTextureSimple( font->texture[i], ( x + font->minx[i] ), ( y + ( ( abs(y2)/2 ) - font->maxy[i] ) ) + font->ascent );
 			}
 
 			x += font->advance[i];
@@ -188,7 +194,7 @@ GDECLSPEC int GLES2D_GetTextWidth( GLES2D_Font *font, char *str )
 	while (*str != 0)
 	{
 		i = (int)*str;
-		if ( ( i >= ' ' ) && ( i <= '~' ) )
+		if ( ( i >= 0 ) && ( i < 128 ) )
 		{
 			width += font->advance[i];
 		}
@@ -281,7 +287,7 @@ GDECLSPEC void GLES2D_SetFontColor( GLES2D_Font *font, int r, int g, int b, int 
 	int i;
 	float _r = r/255.0, _g = g/255.0, _b = b/255.0, _a = a/255.0;
 
-	for ( i = ' '; i <= '~'; i++ )
+	for ( i = 0; i < 128; i++ )
 	{
 		if ( font->texture[i] != NULL )
 		{
@@ -298,7 +304,7 @@ GDECLSPEC void GLES2D_SetFontAlpha( GLES2D_Font *font, int alpha )
 	int i;
 	float _a = alpha/255.0;
 
-	for ( i = ' '; i <= '~'; i++ )
+	for ( i = 0; i < 128; i++ )
 	{
 		if ( font->texture[i] != NULL )
 		{
@@ -314,7 +320,7 @@ GDECLSPEC void GLES2D_SetFontFiltering( GLES2D_Font *font, int param )
 {
 	int i;
 
-	for ( i = ' '; i <= '~'; i++ )
+	for ( i = 0; i < 128; i++ )
 	{
 		if ( font->texture[i] != NULL )
 		{
@@ -327,11 +333,32 @@ GDECLSPEC void GLES2D_FreeFont( GLES2D_Font *font )
 {
 	int i;
 
-	for ( i = ' '; i <= '~'; i++ )
+	for ( i = 0; i < 128; i++ )
 	{
 		if ( font->texture[i] != NULL )
 			GLES2D_FreeTexture( font->texture[i] );
 	}
+
+	free ( font  );
+	font  = NULL;
+}
+
+GDECLSPEC void GLES2D_SetFontCacheColor( GLES2D_FontCache *font, int r, int g, int b, int a )
+{
+	float _r = r/255.0, _g = g/255.0, _b = b/255.0, _a = a/255.0;
+
+	font->texture->color[0] = _r;
+	font->texture->color[1] = _g;
+	font->texture->color[2] = _b;
+	font->texture->color[3] = _a;
+}
+
+GDECLSPEC void GLES2D_FreeFontCache( GLES2D_FontCache *font )
+{
+	if ( font->texture != NULL )
+		GLES2D_FreeTexture( font->texture );
+
+	font->texture = NULL;
 
 	free ( font  );
 	font  = NULL;

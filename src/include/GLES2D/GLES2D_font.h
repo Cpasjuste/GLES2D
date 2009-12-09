@@ -14,6 +14,14 @@ typedef struct
 
 } GLES2D_Font;
 
+
+typedef struct
+{
+	int style, pointsize, height, width, ascent, descent, lineskip, advance;
+	GLES2D_Texture *texture;
+
+} GLES2D_FontCache;
+
 GDECLSPEC GLES2D_Font *GLES2D_CreateFont( char *filename, int style, int size );
 GDECLSPEC void GLES2D_DrawFont( GLES2D_Font *font, int x, int y, char* str );
 GDECLSPEC void GLES2D_DrawFontCentered( GLES2D_Font *font, int x, int y, char *str );
@@ -26,4 +34,9 @@ GDECLSPEC void GLES2D_SetFontFiltering( GLES2D_Font *font, int param );
 GDECLSPEC int GLES2D_GetTextWidth( GLES2D_Font *font, char *str );
 GDECLSPEC void GLES2D_FreeFont( GLES2D_Font *font );
 
+GDECLSPEC GLES2D_FontCache *GLES2D_CreateFontCache( char *filename, char *string, int style, int size, int width );
+GDECLSPEC void GLES2D_DrawFontCache( GLES2D_FontCache *font, int x, int y );
+GDECLSPEC void GLES2D_DrawFontCacheCentered( GLES2D_FontCache *font, int x, int y );
+GDECLSPEC void GLES2D_SetFontCacheColor( GLES2D_FontCache *font, int r, int g, int b, int a );
+GDECLSPEC void GLES2D_FreeFontCache( GLES2D_FontCache *font );
 #endif

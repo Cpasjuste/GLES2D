@@ -333,11 +333,7 @@ GDECLSPEC GLES2D_Texture *GLES2D_CreateTexture( char *filename, int storePixelsC
 void GLES2D_DrawTexture( GLES2D_Texture *texture, GLES2D_Rect *src, GLES2D_Rect *dst, int centered, float rotation )
 {
 	if ( texture->format == RGBA8888 )
-	{
-//		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		glEnable(GL_BLEND);
-//		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	}
 
 	glEnable( GL_TEXTURE_2D );
 	glBindTexture( GL_TEXTURE_2D, texture->texID );
@@ -345,7 +341,6 @@ void GLES2D_DrawTexture( GLES2D_Texture *texture, GLES2D_Rect *src, GLES2D_Rect 
 	glPushMatrix();
 
 	glColor4f( texture->color[0], texture->color[1], texture->color[2], texture->color[3] );
-
 //	glColor4f( texture->colorAlpha[0], texture->colorAlpha[1], texture->colorAlpha[2], 0.5f );
 
 	if ( rotation )
@@ -452,9 +447,7 @@ void GLES2D_DrawTexture( GLES2D_Texture *texture, GLES2D_Rect *src, GLES2D_Rect 
 	glDisable(GL_TEXTURE_2D);
 
 	if ( texture->format == RGBA8888 )
-	{
 		glDisable(GL_BLEND);
-	}
 
 	glPopMatrix();
 }
