@@ -152,7 +152,9 @@ GDECLSPEC int GLES2D_InitVideo( int w, int h, int fullscreen, int vsync, int fsa
 //	else
 //	{
 #ifdef _PANDORA_
+
 		PND_Setup_Controls();
+
 //#else
 //		printf( "FB Video mode not supported on i386 linux\n" );
 #endif
@@ -389,12 +391,9 @@ GDECLSPEC int GLES2D_Quit()
 		}
 	*/
 	}
-	else
-	{
 #ifdef _PANDORA_
-		PND_Close_Controls( );
+	PND_Close_Controls( );
 #endif
-	}
 
 	TTF_Quit();
 	SDL_Quit();

@@ -17,7 +17,7 @@
 	DEBUG_PRINTF( str );\
 	DEBUG_PRINTF( "\n" );
 #else
-#define gprintf( fmt, ... )
-#define gprint( str )
+#define gprintf printf
+#define gprint printf
 #endif
 #endif
