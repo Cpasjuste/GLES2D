@@ -28,7 +28,7 @@ char pnd_gpio[10] = "gpio-keys";
 
 void PND_Setup_Controls( void )
 {
-	printf( "Setting up Pandora Controls\n" );
+	gprintf( "Setting up Pandora Controls\n" );
 
 	// Static Controls
 	// Pandora keyboard
@@ -42,7 +42,7 @@ void PND_Setup_Controls( void )
 
 void PND_Close_Controls( void )
 {
-	printf( "Closing Pandora Controls\n" );
+	gprintf( "Closing Pandora Controls\n" );
 
 	if( fd_pndk > 0 )
 		close(fd_pndk );
@@ -84,7 +84,7 @@ void PND_CheckEvent( struct input_event *event, int device )
 {
 	int value;
 
-//	printf( "Device %d Type %d Code %d Value %d\n", device, event->type, event->code, event->value );
+	gprintf( "Device %d Type %d Code %d Value %d\n", device, event->type, event->code, event->value );
 
 	value	= event->value;
 	switch( event->type )
@@ -142,13 +142,27 @@ void PND_CheckEvent( struct input_event *event, int device )
 						GLES2D_Pad[MENU] = 0;
 					}
 					break;
-				case BTN_START:
-					if ( event->value ) printf("START\n");
+				case 56: // START
+					if ( event->value )
+					{
+						GLES2D_Pad[START] = 1;
+					}
+					else
+					{
+						GLES2D_Pad[START] = 0;
+					}
 					break;
-				case BTN_SELECT:
-					if ( event->value ) printf("SELECT\n");
+				case 29: // SELECT
+					if ( event->value )
+					{
+						GLES2D_Pad[SELECT] = 1;
+					}
+					else
+					{
+						GLES2D_Pad[SELECT] = 0;
+					}
 					break;
-				case BTN_X:
+				case 79: // X
 					if ( event->value ) 
 					{	
 						GLES2D_Pad[X] = 1;
@@ -158,7 +172,7 @@ void PND_CheckEvent( struct input_event *event, int device )
 						GLES2D_Pad[X] = 0;
 					}
 					break;
-				case BTN_Y:
+				case 75: // Y
 					if ( event->value )
 					{	
 						GLES2D_Pad[Y] = 1;
@@ -168,7 +182,7 @@ void PND_CheckEvent( struct input_event *event, int device )
 						GLES2D_Pad[Y] = 0;
 					}
 					break;
-				case BTN_A:
+				case 80: // A
 					if ( event->value ) 
 					{	
 						GLES2D_Pad[A] = 1;
@@ -178,7 +192,7 @@ void PND_CheckEvent( struct input_event *event, int device )
 						GLES2D_Pad[A] = 0;
 					}
 					break;
-				case BTN_B:
+				case 81: // B
 					if ( event->value )
 					{	
 						GLES2D_Pad[B] = 1;
@@ -292,7 +306,7 @@ int PND_OpenEventDeviceByID( int event_id )
 	int fd;
 
 	snprintf( event_name, sizeof(event_name), "/dev/input/event%d", event_id );
-	printf( "Device: %s\n", event_name );
+	gprintf( "Device: %s\n", event_name );
 	if ((fd = open(event_name, O_RDONLY |  O_NDELAY)) < 0) {
 		perror("ERROR: Could not open device");
 		return 0;
@@ -303,15 +317,15 @@ int PND_OpenEventDeviceByID( int event_id )
 		return 0;
 	}
 
-	printf("Input driver version is %d.%d.%d\n",
+	gprintf("Input driver version is %d.%d.%d\n",
 		version >> 16, (version >> 8) & 0xff, version & 0xff);
 
 	ioctl(fd, EVIOCGID, id);
-	printf("Input device ID: bus 0x%x vendor 0x%x product 0x%x version 0x%x\n",
+	gprintf("Input device ID: bus 0x%x vendor 0x%x product 0x%x version 0x%x\n",
 		id[ID_BUS], id[ID_VENDOR], id[ID_PRODUCT], id[ID_VERSION]);
 
 	ioctl(fd, EVIOCGNAME(sizeof(dev_name)), dev_name);
-	printf("Input device name: \"%s\"\n", dev_name);
+	gprintf("Input device name: \"%s\"\n", dev_name);
 
 	return fd;
 }
@@ -323,7 +337,7 @@ int PND_OpenEventDeviceByName( char device_name[] )
 	for (i = 0; 1; i++)
 	{
 		snprintf( event_name, sizeof(event_name), "/dev/input/event%d", i );
-		printf( "Device: %s\n", event_name );
+		gprintf( "Device: %s\n", event_name );
 		if ((fd = open(event_name, O_RDONLY |  O_NDELAY)) < 0) {
 			perror("ERROR: Could not open device");
 			return 0;
@@ -338,15 +352,15 @@ int PND_OpenEventDeviceByName( char device_name[] )
 				return 0;
 			}
 
-			printf("Input driver version is %d.%d.%d\n",
+			gprintf("Input driver version is %d.%d.%d\n",
 				version >> 16, (version >> 8) & 0xff, version & 0xff);
 
 			ioctl(fd, EVIOCGID, id);
-			printf("Input device ID: bus 0x%x vendor 0x%x product 0x%x version 0x%x\n",
+			gprintf("Input device ID: bus 0x%x vendor 0x%x product 0x%x version 0x%x\n",
 				id[ID_BUS], id[ID_VENDOR], id[ID_PRODUCT], id[ID_VERSION]);
 
 			ioctl(fd, EVIOCGNAME(sizeof(dev_name)), dev_name);
-			printf("Input device name: \"%s\"\n", dev_name);
+			gprintf("Input device name: \"%s\"\n", dev_name);
 		  
 			return fd;
 		}

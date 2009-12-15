@@ -36,7 +36,7 @@ GDECLSPEC GLES2D_FontCache *GLES2D_CreateFontCache( char *filename, char *string
 	_font->height = TTF_FontHeight( ttffont );
 	_font->lineskip = TTF_FontLineSkip( ttffont );
 
-	printf("ascent : %i || descent : %i || lineskip : %i || height : %i\n", _font->ascent, _font->descent, _font->lineskip, _font->height );
+	//gprintf("ascent : %i || descent : %i || lineskip : %i || height : %i\n", _font->ascent, _font->descent, _font->lineskip, _font->height );
 
 	int i = 0;
 	char msg[512];
@@ -104,7 +104,7 @@ GDECLSPEC GLES2D_Font *GLES2D_CreateFont( char *filename, int style, int size )
 			return NULL;			
 		}
 		
-		gprintf("%c: ", (char)i );
+		//gprintf("%c: ", (char)i );
 		_font->texture[i] = GLES2D_CreateTextureFromSurface( surf, 0 );
 
 		TTF_GlyphMetrics( ttffont, i, &_font->minx[i], &_font->maxx[i], &_font->miny[i], &_font->maxy[i], &( _font->advance[i] ) );

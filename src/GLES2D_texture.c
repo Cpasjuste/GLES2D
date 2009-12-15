@@ -119,7 +119,7 @@ GDECLSPEC GLES2D_Texture *GLES2D_CreateTextureFromSurface( SDL_Surface *surface,
 		switch ( tex->collision->format->BitsPerPixel )
 		{
 			case 8:
-				gprintf( "Loading surface (8bpp, " );
+				//gprintf( "Loading surface (8bpp, " );
 				tex->format = RGB565;
 				GLinternalFormat = GL_RGB;
 				GLformat = GL_RGB;
@@ -128,7 +128,7 @@ GDECLSPEC GLES2D_Texture *GLES2D_CreateTextureFromSurface( SDL_Surface *surface,
 			break;
 
 			case 16:
-				gprintf( "Loading surface (16bpp, " );
+				//gprintf( "Loading surface (16bpp, " );
 				tex->format = RGB565;
 				GLinternalFormat = GL_RGB;
 				GLformat = GL_RGB;
@@ -137,7 +137,7 @@ GDECLSPEC GLES2D_Texture *GLES2D_CreateTextureFromSurface( SDL_Surface *surface,
 			break;
 
 			case 24:
-				gprintf( "Loading surface (24bpp, " );
+				//gprintf( "Loading surface (24bpp, " );
 				tex->format = RGB24;
 				GLinternalFormat = GL_RGB;
 				GLformat = GL_RGB;
@@ -147,7 +147,7 @@ GDECLSPEC GLES2D_Texture *GLES2D_CreateTextureFromSurface( SDL_Surface *surface,
 			break;
 
 			case 32:
-				gprintf( "Loading surface (32bpp, " );
+				//gprintf( "Loading surface (32bpp, " );
 				tex->format = RGBA8888;
 				GLinternalFormat = GL_RGBA;
 				GLformat = GL_RGBA;
@@ -164,7 +164,7 @@ GDECLSPEC GLES2D_Texture *GLES2D_CreateTextureFromSurface( SDL_Surface *surface,
 			break;
 		}
 
-		gprintf("image w/h: %i/%i, texture w/h: %i/%i )\n", tex->collision->w, tex->collision->h, w, h );
+		//gprintf("image w/h: %i/%i, texture w/h: %i/%i )\n", tex->collision->w, tex->collision->h, w, h );
 
 		SDL_BlitSurface( tex->collision, 0, tmp, 0 );
         
@@ -332,7 +332,7 @@ GDECLSPEC GLES2D_Texture *GLES2D_CreateTexture( char *filename, int storePixelsC
 
 void GLES2D_DrawTexture( GLES2D_Texture *texture, GLES2D_Rect *src, GLES2D_Rect *dst, int centered, float rotation )
 {
-	if ( texture->format == RGBA8888 )
+	//if ( texture->format == RGBA8888 )
 		glEnable(GL_BLEND);
 
 	glEnable( GL_TEXTURE_2D );
@@ -446,7 +446,7 @@ void GLES2D_DrawTexture( GLES2D_Texture *texture, GLES2D_Rect *src, GLES2D_Rect 
 
 	glDisable(GL_TEXTURE_2D);
 
-	if ( texture->format == RGBA8888 )
+	//if ( texture->format == RGBA8888 )
 		glDisable(GL_BLEND);
 
 	glPopMatrix();
