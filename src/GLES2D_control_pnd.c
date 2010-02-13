@@ -92,136 +92,58 @@ void PND_CheckEvent( struct input_event *event, int device )
 		case EV_KEY:
 			switch( event->code )
 			{
-				case KEY_UP:
-					if ( event->value )
-					{	
-						GLES2D_Pad[PAD_UP] = 1;
-					}
-					else
-					{
-						GLES2D_Pad[PAD_UP] = 0;
-					}
-					break;
-				case KEY_DOWN:
-					if ( event->value )
-					{	
-						GLES2D_Pad[PAD_DOWN] = 1;
-					}
-					else
-					{
-						GLES2D_Pad[PAD_DOWN] = 0;
-					}
-					break;
-				case KEY_LEFT:
-					if ( event->value )
-					{	
-						GLES2D_Pad[PAD_LEFT] = 1;
-					}
-					else
-					{
-						GLES2D_Pad[PAD_LEFT] = 0;
-					}
-					break;
-				case KEY_RIGHT:
-					if ( event->value )
-					{	
-						GLES2D_Pad[PAD_RIGHT] = 1;
-					}
-					else
-					{
-						GLES2D_Pad[PAD_RIGHT] = 0;
-					}
-					break;
-				case KEY_MENU:
-					if ( event->value )
-					{	
-						GLES2D_Pad[MENU] = 1;
-					}
-					else
-					{
-						GLES2D_Pad[MENU] = 0;
-					}
-					break;
+				case 103: // UP
+					GLES2D_Pad[PAD_UP] = event->value;
+				break;
+
+				case 108: // DOWN
+					GLES2D_Pad[PAD_DOWN] = event->value;
+				break;
+
+				case 105: // LEFT
+					GLES2D_Pad[PAD_LEFT] = event->value;
+				break;
+
+				case 106: // RIGHT
+					GLES2D_Pad[PAD_RIGHT] = event->value;
+				break;
+
+				case 139: // MENU
+					GLES2D_Pad[MENU] = event->value;
+				break;
+
 				case 56: // START
-					if ( event->value )
-					{
-						GLES2D_Pad[START] = 1;
-					}
-					else
-					{
-						GLES2D_Pad[START] = 0;
-					}
-					break;
+					GLES2D_Pad[START] = event->value;
+				break;
+
 				case 29: // SELECT
-					if ( event->value )
-					{
-						GLES2D_Pad[SELECT] = 1;
-					}
-					else
-					{
-						GLES2D_Pad[SELECT] = 0;
-					}
-					break;
-				case 79: // X
-					if ( event->value ) 
-					{	
-						GLES2D_Pad[X] = 1;
-					}
-					else
-					{
-						GLES2D_Pad[X] = 0;
-					}
-					break;
-				case 75: // Y
-					if ( event->value )
-					{	
-						GLES2D_Pad[Y] = 1;
-					}
-					else
-					{
-						GLES2D_Pad[Y] = 0;
-					}
-					break;
-				case 80: // A
-					if ( event->value ) 
-					{	
-						GLES2D_Pad[A] = 1;
-					}
-					else
-					{
-						GLES2D_Pad[A] = 0;
-					}
-					break;
-				case 81: // B
-					if ( event->value )
-					{	
-						GLES2D_Pad[B] = 1;
-					}
-					else
-					{
-						GLES2D_Pad[B] = 0;
-					}
-					break;
-				case BTN_TL:
-					if ( event->value )
-					{	
-						GLES2D_Pad[L] = 1;
-					}
-					else
-					{
-						GLES2D_Pad[L] = 0;
-					}
-					break;
-				case BTN_TR:
-					if ( event->value )
-					{	
-						GLES2D_Pad[R] = 1;
-					}
-					else
-					{
-						GLES2D_Pad[R] = 0;
-					}
-					break;
+					GLES2D_Pad[SELECT] = event->value;
+				break;
+
+				case 81: // X
+					GLES2D_Pad[X] = event->value;
+				break;
+
+				case 79: // Y
+					GLES2D_Pad[Y] = event->value;
+				break;
+
+				case 75: // A	
+					GLES2D_Pad[A] = event->value;
+				break;
+
+				case 80: // B
+					GLES2D_Pad[B] = event->value;
+				break;
+
+				case 76:
+					GLES2D_Pad[L] = event->value;
+				break;
+
+				case 77:
+					GLES2D_Pad[R] = event->value;
+				break;
+
 				default:
 					break;
 			}

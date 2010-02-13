@@ -47,16 +47,7 @@ int main( int argc, char *argv[] )
 		GLES2D_DrawTextureSimple( rgb565, 0, 0 );
 		GLES2D_DrawTextureSimple( rgba, 672, 0 );
 
-		//GLES2D_DrawTextureRotatedCenteredScaled( smiley, 400, 240, 128, 128, rot );
-
-		smiley->src->x = 32;
-		smiley->src->y = 32;
-		smiley->src->w = 32;
-		smiley->src->h = 32;
-		smiley->dst->w = 32;	
-		smiley->dst->h = 32;
-
-		GLES2D_DrawTextureCentered( smiley, 400, 240 );
+		GLES2D_DrawTextureRotatedCenteredScaled( smiley, 400, 240, 128, 128, rot );
 		rot += 0.5f;
 
 		GLES2D_DrawFont( font, 10, 10, "aBcdefghijklmnopqrstuvwxyz" );
