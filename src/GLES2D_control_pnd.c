@@ -120,27 +120,27 @@ void PND_CheckEvent( struct input_event *event, int device )
 					GLES2D_Pad[SELECT] = event->value;
 				break;
 
-				case 81: // X
+				case 109: // X
 					GLES2D_Pad[X] = event->value;
 				break;
 
-				case 79: // Y
+				case 104: // Y
 					GLES2D_Pad[Y] = event->value;
 				break;
 
-				case 75: // A	
+				case 102: // A	
 					GLES2D_Pad[A] = event->value;
 				break;
 
-				case 80: // B
+				case 107: // B
 					GLES2D_Pad[B] = event->value;
 				break;
 
-				case 76:
+				case 54:
 					GLES2D_Pad[L] = event->value;
 				break;
 
-				case 77:
+				case 97:
 					GLES2D_Pad[R] = event->value;
 				break;
 
