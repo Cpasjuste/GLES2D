@@ -92,19 +92,19 @@ void PND_CheckEvent( struct input_event *event, int device )
 		case EV_KEY:
 			switch( event->code )
 			{
-				case 103: // UP
+				case 256: // UP
 					GLES2D_Pad[PAD_UP] = event->value;
 				break;
 
-				case 108: // DOWN
+				case 257: // DOWN
 					GLES2D_Pad[PAD_DOWN] = event->value;
 				break;
 
-				case 105: // LEFT
+				case 258: // LEFT
 					GLES2D_Pad[PAD_LEFT] = event->value;
 				break;
 
-				case 106: // RIGHT
+				case 259: // RIGHT
 					GLES2D_Pad[PAD_RIGHT] = event->value;
 				break;
 
@@ -112,35 +112,35 @@ void PND_CheckEvent( struct input_event *event, int device )
 					GLES2D_Pad[MENU] = event->value;
 				break;
 
-				case 56: // START
+				case 315: // START
 					GLES2D_Pad[START] = event->value;
 				break;
 
-				case 29: // SELECT
+				case 314: // SELECT
 					GLES2D_Pad[SELECT] = event->value;
 				break;
 
-				case 109: // X
+				case 296: // X
 					GLES2D_Pad[X] = event->value;
 				break;
 
-				case 104: // Y
+				case 294: // Y
 					GLES2D_Pad[Y] = event->value;
 				break;
 
-				case 102: // A	
+				case 297: // A	
 					GLES2D_Pad[A] = event->value;
 				break;
 
-				case 107: // B
+				case 295: // B
 					GLES2D_Pad[B] = event->value;
 				break;
 
-				case 54:
+				case 310:
 					GLES2D_Pad[L] = event->value;
 				break;
 
-				case 97:
+				case 311:
 					GLES2D_Pad[R] = event->value;
 				break;
 

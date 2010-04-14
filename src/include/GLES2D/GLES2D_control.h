@@ -15,10 +15,10 @@ GDECLSPEC KeySym GLES2D_XKeycodeToKeysym ( int Keycode );
 #define XK_PND GLES2D_XKeycodeToKeysym(147)
 
 /* Logitech Precision GamePad keycodes */
-#define PAD_UP 100
-#define PAD_DOWN 101
-#define PAD_LEFT  102
-#define PAD_RIGHT 103
+#define PAD_UP 11
+#define PAD_DOWN 12
+#define PAD_LEFT  13
+#define PAD_RIGHT 14
 #define A 0
 #define B  3
 #define X 1
@@ -50,7 +50,7 @@ GDECLSPEC unsigned int GLES2D_Keyboard[256];
 /**
   * Pad buttons (internal usage, should not be called directly)
   */
-GDECLSPEC int GLES2D_Pad[12];
+GDECLSPEC int GLES2D_Pad[15];
 
 
 GDECLSPEC int GLES2D_GetJoystickNum();

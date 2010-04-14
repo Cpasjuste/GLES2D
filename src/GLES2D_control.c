@@ -56,6 +56,7 @@ GDECLSPEC void GLES2D_UseJoystick( int num )
 	}
 }
 
+#ifndef _PANDORA_
 void joyDown(int axis, int value)
 {
 	if ( axis == 1 )
@@ -128,7 +129,7 @@ void joyDown(int axis, int value)
 		}
 	}
 }
-
+#endif
 
 GDECLSPEC int GLES2D_PadPressed ( int num )
 {
